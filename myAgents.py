@@ -41,10 +41,11 @@ class TimidAgent(Agent):
          Each round we need to see if packman is in danger
          based off what happened last turn ->
 
+
          1. See how far the agents on the board are from packman (Search)
             TODO: Build search algorithm for finding packman distance
 
-        
+
          2. Use this information to help pacman decide if he is in danger
          (We loop from closest to furthest ghost checking each one)
             -> Danger is Defined as matching the following criteria:
@@ -67,7 +68,14 @@ class TimidAgent(Agent):
         4. -> If not in danger ->
             We act like left turn agent (We can just copy that code)
 
+
         Fill in appropriate documentation
         """
+
+        # Search ->
+        #mazeDistance()
+
+
+
 
         raise NotImplemented

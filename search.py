@@ -16,7 +16,7 @@
 In search.py, you will implement generic search algorithms which are called by
 Pacman agents (in searchAgents.py).
 """
-
+import game
 import util
 
 class SearchProblem:
@@ -97,7 +97,46 @@ def depthFirstSearch(problem):
     #util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
+
     """Search the shallowest nodes in the search tree first."""
+    ##PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
+    # Important note:
+    # All of your search functions need to return a list of actions that will
+    # lead the agent from the start to the goal.
+
+    # These actions all have to be legal moves:
+    # - Valid directions
+    # - No moving through walls
+
+    # gaving our goal locally
+    goal = problem.getGoalState()
+    start = problem.getStartState()
+    # How to get walls from our current state
+    wallsGrid = problem.walls
+    #Saving the width and height of our board:
+    width = wallsGrid.width
+    height = wallsGrid.height
+
+    # We need to make a matrix of visited places to see
+    # if we have already traveresed in our journey:
+    visitedGrid = [[False for _ in range(height)] for _ in range(width)]
+
+    # Marking our start state on this grid as true (This is where)
+    # We are starting ->
+    visitedGrid[start[0]][start[1]] = True
+
+    #BFS algorithm
+    # https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
+
+    # We need to return a list of commands for how to move
+    # So our Queue should compensate for this fact:
+
+    # Once we have our stack ->
+    # getting our board so we can see it
+    print(wallsGrid)
+    print("*****************************************")
+    print(visitedGrid)
+
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
@@ -120,7 +159,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
 
 
 # Abbreviations
-bfs = breadthFirstSearch
+bfs = breadthFirstSearch ##TODO
+
+
+
+
+
+
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
