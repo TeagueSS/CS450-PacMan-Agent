@@ -24,7 +24,7 @@ class TimidAgent(Agent):
         """inDanger(pacman, ghost) - Is the pacman in danger
         For better or worse, our definition of danger is when the pacman and
         the specified ghost are:
-           in the same row or column,
+           in the same row or column, -> Does this even require walls?
            the ghost is not scared,
            and the agents are <= dist units away from one another
 
@@ -37,11 +37,11 @@ class TimidAgent(Agent):
         inDanger = not ghost.isScared()
 
         # Marking our ghost position
-        ghostPosition = ghost.getPosition
+        ghostPosition = ghost.getPosition()
 
         # 2. Conditon 2 -> is the distance less than or equal to our provided
         # distance
-        if(not inDanger):
+        if(inDanger):
             # Getting our distance from the Manhattan function
             distance = manhattanDistance(pacman, ghostPosition)
             # Checking if it is greater than our distance
@@ -87,7 +87,7 @@ class TimidAgent(Agent):
                 # Now if we have seen a ghost
                 if (clearLineOfSight):
                     # Returning to the right of us which should be east
-                    return   Directions.EAST
+                    return Directions.EAST
 
             # Otherwise we can the ghost is to the left of PacMan
             else:
@@ -173,74 +173,76 @@ class TimidAgent(Agent):
         #raise NotImplemented
     
     def getAction(self, state):
-        """
-        state - GameState
 
-         Each round we need to see if packman is in danger
-         based off what happened last turn ->
-
-
-         1. See how far the agents on the board are from packman (Search)
-            TODO: Build search algorithm for finding packman distance
-        """
         # Getting the position of pacMan
-        pacmanPosition = state.getPacmanPosition
+        pacmanPosition = state.getPacmanPosition()
         # Finding out how many ghosts we have so we can check the
         # positon of all of our ghosts ->
         ghostPositions = state.getGhostPositions
         # Now that we have the number of agents we need to check each one
-        ''' Possibly should be defined as:
-            for ghostIndex in range(len(state.getGhostPositions())):
-    ghostState = state.getGhostState(ghostIndex)
 
-        But we won't know till testing 
-        '''
-
-        for ghost in ghostPositions:
-            # Seeing if this ghost puts us in danger
-            # Here we are passing the game, and our ghost position
-            inDanger = self.inDanger(state, pacmanPosition, ghost)
-            # This will either return ->
-                    # If the pacman is not in danger, we return Directions.STOP
-                    # If the pacman is in danger we return the direction to the ghost.
-
-            # If we're in danger follow down bellow \/
-
-
-
-
-        """
-
-         2. Use this information to help pacman decide if he is in danger
+        '''  2. Use this information to help pacman decide if he is in danger
          (We loop from closest to furthest ghost checking each one)
             -> Danger is Defined as matching the following criteria:
                 1.The ghost and the pacman are in the same row or column.
-                    -> TODO: Figure out how to check board conditons
+                    -> TODO: Figure out how to check board conditons (What about walls???)
                 2.The ghost is within dist units (formal argument to the method) of the pacman.
                     -> Provided by method
                 3.The ghost is not frightened (see the Ghost state for how to check for this).
                     -> Provided by ghost state
+        '''
+        # Setting our default Direction to the direction we are currently headed
+        returnDirection = state.getDirection()
 
+        # Getting our ghost states as an array
+        ghostStates = state.getGhostStates()  # Retrieves a list of ghost states
+        # Checking if pacman is in danger ->
+        for ghostState in ghostStates:
+            returnDirection = self.inDanger(state, pacmanPosition, ghostState)
 
-         3. ->IF IN DANGER -> (if pacman is (inDanger) we use that bool to indicate we need to flee)
+        # If we're in danger follow down bellow \/
+        '''
+         3. -> IF IN DANGER -> (if pacman is (inDanger) we use that bool to indicate we need to flee)
             We check for lega directions in the following order:
             1.reversing the current direction,
             2. turning to the left
             3. then turning to the right
             else:  none of these are legal, we continue in the direction of the danger, or
             stop if no move is legal (only possible in contrived boards).
-
+        '''
+        # IN it's simplist form it should look like this ->
+        if(returnDirection != Directions.STOP):
+            return returnDirection
+        '''
         4. -> If not in danger ->
             We act like left turn agent (We can just copy that code)
+        '''
+        ##TODO This is the existing left turn agent code ->
+        # List of directions the agent can choose from
+        legal = state.getLegalPacmanActions()
 
+        # Get the agent's state from the game state and find agent heading
+        agentState = state.getPacmanState()
+        heading = agentState.getDirection()
 
-        Fill in appropriate documentation
-        """
+        if heading == Directions.STOP:
+            # Pacman is stopped, assume North (true at beginning of game)
+            heading = Directions.NORTH
 
-        # Search ->
-        #mazeDistance()
+        # Turn left if possible
+        left = Directions.LEFT[heading]  # What is left based on current heading
+        if left in legal:
+            action = left
+        else:
+            # No left turn
+            if heading in legal:
+                action = heading  # continue in current direction
+            elif Directions.RIGHT[heading] in legal:
+                action = Directions.RIGHT[heading]  # Turn right
+            elif Directions.REVERSE[heading] in legal:
+                action = Directions.REVERSE[heading]  # Turn around
+            else:
+                action = Directions.STOP  # Can't move!
 
+        return action
 
-
-
-        raise NotImplemented
