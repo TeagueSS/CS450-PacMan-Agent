@@ -83,6 +83,7 @@ class TimidAgent(Agent):
                     else:
                         #And we increase our row shift ->
                         checkRow += 1
+
                 # Now if we have seen a ghost
                 if (clearLineOfSight):
                     # Returning to the right of us which should be east
@@ -142,18 +143,34 @@ class TimidAgent(Agent):
                 if clearLineOfSight:
                     return Directions.NORTH  # Or SOUTH, based on direction
 
+        ''' STEP 4: if we are in danger (Which we should already know), we need to return 
+        from what direction the danger is coming from -> '''
 
+        if(inDanger):
+            # Check which direction is greater ->
+            if(abs(pacman[0] - ghostPosition[0]) >= abs(pacman[1] - ghostPosition[1])):
+                # Now we know that our x distance is greater
+                # So lets return the closest y - Direction
+                if(pacman[1] > ghostPosition[1]):
+                    # If pacman is above then our ghost is below!
+                    return Directions.SOUTH
+                else:
+                    #Otherwise we can say the ghost is above pacman
+                    return Directions.NORTH
+            else:
+                #now we know that our y distance is greater
+                #So we return whatever x distance is greater
+                if(pacman[1] > ghostPosition[1]):
+                    # If pacman is to the right then the ghost is to the left (West)
+                    return Directions.WEST
+                else:
+                    # If pacman is to the left, then the ghost is to the right (East)
+                    return Directions.EAST
 
-
-        ## TODO if we are in danger but they don't share a column where are they relative to:
-        #   # pacman (Up down left right ) -> this can just be a switch statement
-
-        # We can assume PacMan isn't in danger if we haven't decided so already and return
+        #If he isn't in danger then we can return stop ->
         return Directions.STOP
-        # Now that we know the distance we need to find the moves between our two
-        # entities throuugh BFS
 
-        raise NotImplemented
+        #raise NotImplemented
     
     def getAction(self, state):
         """
