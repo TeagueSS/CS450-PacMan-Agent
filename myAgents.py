@@ -146,27 +146,43 @@ class TimidAgent(Agent):
         ''' STEP 4: if we are in danger (Which we should already know), we need to return 
         from what direction the danger is coming from -> '''
 
-        if(inDanger):
-            # Check which direction is greater ->
-            if(abs(pacman[0] - ghostPosition[0]) >= abs(pacman[1] - ghostPosition[1])):
-                # Now we know that our x distance is greater
-                # So lets return the closest y - Direction
-                if(pacman[1] > ghostPosition[1]):
-                    # If pacman is above then our ghost is below!
-                    return Directions.SOUTH
-                else:
-                    #Otherwise we can say the ghost is above pacman
-                    return Directions.NORTH
-            else:
-                #now we know that our y distance is greater
-                #So we return whatever x distance is greater
-                if(pacman[1] > ghostPosition[1]):
-                    # If pacman is to the right then the ghost is to the left (West)
-                    return Directions.WEST
-                else:
-                    # If pacman is to the left, then the ghost is to the right (East)
+        if (inDanger):
+            # Check if Pacman and the ghost are in the same row
+            if pacman[1] == ghostPosition[1]:
+                # If Pacman is to the left of the ghost, return EAST
+                if pacman[0] < ghostPosition[0]:
                     return Directions.EAST
-
+                # Otherwise, Pacman is to the right of the ghost, return WEST
+                else:
+                    return Directions.WEST
+            # If not in the same row, check if they are in the same column
+            elif pacman[0] == ghostPosition[0]:
+                # If Pacman is below the ghost, return NORTH
+                if pacman[1] < ghostPosition[1]:
+                    return Directions.NORTH
+                # Otherwise, Pacman is above the ghost, return SOUTH
+                else:
+                    return Directions.SOUTH
+        '''    # Check which direction is greater ->                                      |
+            if(abs(pacman[0] - ghostPosition[0]) >= abs(pacman[1] - ghostPosition[1])):   |  
+                # Now we know that our x distance is greater                              |
+                # So lets return the closest y - Direction                                |
+                if(pacman[1] > ghostPosition[1]):                                         |
+                    # If pacman is above then our ghost is below!                         |
+                    return Directions.SOUTH                                               |
+                else:                                                                     |
+                    #Otherwise we can say the ghost is above pacman                       |    Teague
+                    return Directions.NORTH                                               |
+            else:                                                                         |
+                #now we know that our y distance is greater                               |
+                #So we return whatever x distance is greater                              |
+                if(pacman[1] > ghostPosition[1]):                                         |
+                    # If pacman is to the right then the ghost is to the left (West)      |
+                    return Directions.WEST                                                |
+                else:                                                                     |
+                    # If pacman is to the left, then the ghost is to the right (East)     |
+                    return Directions.EAST                                                |
+        '''
         #If he isn't in danger then we can return stop ->
         return Directions.STOP
 
@@ -197,8 +213,15 @@ class TimidAgent(Agent):
         # Getting our ghost states as an array
         ghostStates = state.getGhostStates()  # Retrieves a list of ghost states
         # Checking if pacman is in danger ->
+        #for ghostState in ghostStates:
+        #    returnDirection = self.inDanger(state, pacmanPosition, ghostState)
+
+        # Carlos' Version: The previous loop kept on checking for Pacman in danger
+        # This way it checks for danger once at time and it takes better decision according to the Ghosts' location.
         for ghostState in ghostStates:
-            returnDirection = self.inDanger(state, pacmanPosition, ghostState)
+            dangerDirection = self.inDanger(state, pacmanPosition, ghostState)
+            if dangerDirection != Directions.STOP:
+                return dangerDirection  # Immediately return when danger is found
 
         # If we're in danger follow down bellow \/
         '''
