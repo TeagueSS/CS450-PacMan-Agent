@@ -21,6 +21,9 @@ class TimidAgent(Agent):
         # Add anything else you think you need here
 
     def inDanger(self, pacman, ghost, dist=3):
+        # Saving our pacman position from the pacman agent himself ->
+
+        pacManPosition = pacman.getPosition()
         """inDanger(pacman, ghost) - Is the pacman in danger
         For better or worse, our definition of danger is when the pacman and
         the specified ghost are:
@@ -39,7 +42,7 @@ class TimidAgent(Agent):
         # distance
 
         # Getting our distance from the Manhattan function
-        distance = manhattanDistance(pacman, ghostPosition)
+        distance = manhattanDistance(pacManPosition, ghostPosition)
         # Checking if it is greater than our distance
         if distance <= dist:
             inDanger = True
@@ -50,11 +53,11 @@ class TimidAgent(Agent):
         # Saving our walls / gameBoard
         #walls = state.getWalls()
         # Checking if they share a y height
-        if(pacman[1] == ghostPosition[1] ):
+        if(pacManPosition[1] == ghostPosition[1] ):
             # If they share a column then we are in danger ->
             inDanger = True
         # Checking if they share a row ->
-        elif(pacman[0] == ghostPosition[0]):
+        elif(pacManPosition[0] == ghostPosition[0]):
             inDanger = True
 
         ''' STEP 4: if we are in danger (Which we should already know), we need to return 
@@ -73,26 +76,26 @@ class TimidAgent(Agent):
 
         if (inDanger):
             # Check if Pacman and the ghost are in the same row
-            if pacman[1] == ghostPosition[1]:
+            if pacManPosition[1] == ghostPosition[1]:
                 # If Pacman is to the left of the ghost, return EAST
-                if pacman[0] < ghostPosition[0]:
+                if pacManPosition[0] < ghostPosition[0]:
                     return Directions.EAST
                 # Otherwise, Pacman is to the right of the ghost, return WEST
                 else:
                     return Directions.WEST
             # If not in the same row, check if they are in the same column
-            elif pacman[0] == ghostPosition[0]:
+            elif pacManPosition[0] == ghostPosition[0]:
                 # If Pacman is below the ghost, return NORTH
-                if pacman[1] < ghostPosition[1]:
+                if pacManPosition[1] < ghostPosition[1]:
                     return Directions.NORTH
                 # Otherwise, Pacman is above the ghost, return SOUTH
                 else:
                     return Directions.SOUTH
             # Check which direction is greater ->
-            if(abs(pacman[0] - ghostPosition[0]) >= abs(pacman[1] - ghostPosition[1])):
+            if(abs(pacManPosition[0] - ghostPosition[0]) >= abs(pacManPosition[1] - ghostPosition[1])):
                 # Now we know that our x distance is greater
                 # So lets return the closest y - Direction
-                if(pacman[1] > ghostPosition[1]):
+                if(pacManPosition[1] > ghostPosition[1]):
                     # If pacman is above then our ghost is below!
                     return Directions.SOUTH
                 else:
@@ -101,13 +104,12 @@ class TimidAgent(Agent):
             else:
                 #now we know that our y distance is greater
                 #So we return whatever x distance is greater
-                if(pacman[1] > ghostPosition[1]):
+                if(pacManPosition[1] > ghostPosition[1]):
                     # If pacman is to the right then the ghost is to the left (West)
                     return Directions.WEST
                 else:
                     # If pacman is to the left, then the ghost is to the right (East)
                     return Directions.EAST
-
             #If he isn't in danger then we can return stop ->
         return Directions.STOP
 
@@ -116,7 +118,15 @@ class TimidAgent(Agent):
     def getAction(self, state):
 
         # Getting the position of pacMan
-        pacmanPosition = state.getPacmanPosition()
+        packMan = state.getPacmanState()
+
+
+        # Pass packman
+        #pacmanPositionTwo = packMan.getPacmanPosition()
+        #pacmanPosition = state.getPacmanPosition()
+
+
+
         # Finding out how many ghosts we have so we can check the
         # positon of all of our ghosts ->
         ghostPositions = state.getGhostPositions
@@ -136,8 +146,8 @@ class TimidAgent(Agent):
         #TODO ERROR HERE
         #state.getDirection()
         # updating our default direction ->
-        agentState = state.getPacmanState()
-        returnDirection = agentState.getDirection()
+        #agentState = state.getPacmanState()
+        #returnDirection = agentState.getDirection()
 
         # Getting our ghost states as an array
         ghostStates = state.getGhostStates()  # Retrieves a list of ghost states
@@ -148,7 +158,7 @@ class TimidAgent(Agent):
         # Carlos' Version: The previous loop kept on checking for Pacman in danger
         # This way it checks for danger once at time and it takes better decision according to the Ghosts' location.
         for ghostState in ghostStates:
-            dangerDirection = self.inDanger(pacmanPosition, ghostState)
+            dangerDirection = self.inDanger(packMan, ghostState)
             if dangerDirection != Directions.STOP:
 
                 # Desired Direction
