@@ -31,25 +31,18 @@ class TimidAgent(Agent):
         If the pacman is not in danger, we return Directions.STOP
         If the pacman is in danger we return the direction to the ghost.
         """
-        # Saving our direction (Where our ghost is at)
-        # We can assume we aren't in danger and can edit it later
-        ghostDirection = Directions.STOP
-
-        #TODO 1. Is the Ghost scared?
-        # We can assume we are in danger if the ghost isn't scared and vice versa
-        inDanger = not ghost.isScared()
-        # We're going to make this false for now ->
         inDanger = False
+        # We're going to make this false for now ->
         # Marking our ghost position
         ghostPosition = ghost.getPosition()
         #TODO 2. Conditon 2 -> is the distance less than or equal to our provided
         # distance
-        if(inDanger):
-            # Getting our distance from the Manhattan function
-            distance = manhattanDistance(pacman, ghostPosition)
-            # Checking if it is greater than our distance
-            if distance <= dist:
-                inDanger = True
+
+        # Getting our distance from the Manhattan function
+        distance = manhattanDistance(pacman, ghostPosition)
+        # Checking if it is greater than our distance
+        if distance <= dist:
+            inDanger = True
 
         #TODO 3. Check if we are in the same row or column as our ghost
         # We have to check both row and column so checking row first
@@ -66,6 +59,17 @@ class TimidAgent(Agent):
 
         ''' STEP 4: if we are in danger (Which we should already know), we need to return 
         from what direction the danger is coming from -> '''
+
+
+        # Checking if the ghosts are scared,
+        # We can't be in danger if the ghosts are scared ->
+
+        # We can assume we are in danger if the ghost isn't scared and vice versa
+        if(inDanger & ghost.isScared()):
+            # Seeing if our ghost is scared
+            inDanger = False
+            return Directions.STOP
+
 
         if (inDanger):
             # Check if Pacman and the ghost are in the same row
@@ -250,3 +254,4 @@ class TimidAgent(Agent):
 
         return action
 
+        # Checking for github
