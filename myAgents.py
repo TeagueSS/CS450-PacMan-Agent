@@ -38,6 +38,8 @@ class TimidAgent(Agent):
         #TODO 1. Is the Ghost scared?
         # We can assume we are in danger if the ghost isn't scared and vice versa
         inDanger = not ghost.isScared()
+        # We're going to make this false for now ->
+        inDanger = False
         # Marking our ghost position
         ghostPosition = ghost.getPosition()
         #TODO 2. Conditon 2 -> is the distance less than or equal to our provided
@@ -103,7 +105,7 @@ class TimidAgent(Agent):
                     return Directions.EAST
 
             #If he isn't in danger then we can return stop ->
-            return Directions.STOP
+        return Directions.STOP
 
 
 
@@ -144,6 +146,26 @@ class TimidAgent(Agent):
         for ghostState in ghostStates:
             dangerDirection = self.inDanger(pacmanPosition, ghostState)
             if dangerDirection != Directions.STOP:
+
+                # Desired Direction
+                desiredDirection = dangerDirection
+                # We know the direction of the danger we just need to see where that is
+                # Relative to pacman
+                if(dangerDirection == Directions.NORTH):
+                    # Return south
+                    desiredDirection = Directions.SOUTH
+                # If our danger is south
+                elif(dangerDirection == Directions.SOUTH):
+                    desiredDirection = Directions.NORTH
+                # If our danger Direction is East
+                elif(dangerDirection == Directions.EAST):
+                    desiredDirection = Directions.WEST
+                # If our danger Direction is west
+                elif(dangerDirection == Directions.WEST):
+                    desiredDirection = Directions.EAST
+
+
+
                 #TODO possible error could be that we return the direction of the ghost,
                 # not the direction of the ghost relative to pacman ->
 
@@ -159,11 +181,10 @@ class TimidAgent(Agent):
                 agentState = state.getPacmanState()
                 heading = agentState.getDirection()
                 # see if the opposite direction of the Ghost is legal
-                back = Directions.BACK[dangerDirection]
                 # See if turning around is legal
-                if(back in legal):
+                if(desiredDirection in legal):
                     # if turning around from the danger is legal then turn around
-                    return back
+                    return desiredDirection
                 # If we can't go back lets go left
                 elif(Directions.LEFT[heading] in legal):
                     # If we can turn left, lets turn left!
