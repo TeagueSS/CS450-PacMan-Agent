@@ -23,28 +23,38 @@ class TimidAgent(Agent):
     def inDanger(self, pacman, ghost, dist=3):
         # Saving our pacman position from the pacman agent himself ->
 
+        #Getting packman's position from his agent state ->
         pacManPosition = pacman.getPosition()
+        #Getting Ghost's position from his agent State
         ghostPosition = ghost.getPosition()
         # Conditions that determine the pacman is danger
+        # 1 if the ghost is scared
         isGhostScared = ghost.isScared()
+        # 2 if they share a row or collumn
         sameRow = (ghostPosition[1] == pacManPosition[1])
         sameColumn = (ghostPosition[0] == pacManPosition[0])
+        # 3 if their distance is smaller than 3
         distance = manhattanDistance(pacManPosition, ghostPosition)
 
-        # Check if Pacman is in danger
+        # Now we see if he is in danger ->
         if not isGhostScared and (distance <= dist):
+            #If we pass the inital conditon we check for
+            # if they're in the same row
             if sameRow:
+                #If they are check the direction to return
                 if ghostPosition[0] > pacManPosition[0]:
                     return Directions.EAST
                 else:
                     return Directions.WEST
 
             if sameColumn:
+                # If they're in the same column
+                # WE need to see who's higher up ->
                 if ghostPosition[1] > pacManPosition[1]:
                     return Directions.NORTH
                 else:
                     return Directions.SOUTH
-
+        #Otherwise we can assume he isn't in danger and return STOP
         return Directions.STOP
 
 
@@ -59,52 +69,39 @@ class TimidAgent(Agent):
         ghostPositions = state.getGhostPositions
         # Now that we have the number of agents we need to check each one
 
-        '''  2. Use this information to help pacman decide if he is in danger
-         (We loop from closest to furthest ghost checking each one)
-            -> Danger is Defined as matching the following criteria:
-                1.The ghost and the pacman are in the same row or column.
-                    -> TODO: Figure out how to check board conditons (What about walls???)
-                2.The ghost is within dist units (formal argument to the method) of the pacman.
-                    -> Provided by method
-                3.The ghost is not frightened (see the Ghost state for how to check for this).
-                    -> Provided by ghost state
-        '''
-        # Setting our default Direction to the direction we are currently headed
-        #TODO ERROR HERE
-        #state.getDirection()
         # Getting our ghost states as an array
         ghostStates = state.getGhostStates()  # Retrieves a list of ghost states
-        # Checking if pacman is in danger ->
-        #for ghostState in ghostStates:
-        #    returnDirection = self.inDanger(state, pacmanPosition, ghostState)
+
+        # Saving pacman's current direction as his default ->
         desiredDirection = packMan.getDirection()
+
         # Carlos' Version: The previous loop kept on checking for Pacman in danger
-        # This way it checks for danger once at time and it takes better decision according to the Ghosts' location.
+        # This way it checks for danger once at time
+        # #and it takes better decision according to the Ghosts' location.
 
-        ''''''
 
+        # Looping for all of the ghosts on the baord ->
         for ghostState in ghostStates:
             dangerDirection = self.inDanger(packMan, ghostState)
+            # Seeing if we found danger
             if dangerDirection != Directions.STOP:
+                # If we are in danger attempt to get away ->
 
-                # Chaning it so that it just reverses heading
-                # Desired Direction
-                desiredDirection = dangerDirection
+                # Setting our default Direction to our current Direction ->
                 dangerDirection = packMan.getDirection()
-                #We need to try it so that he just reverses regardless of
-                #where the danger is relative to him
-
-                #HERE IS WHAT WE CHANCE
+                # Marking what our left of our desired direction would be
                 desiredLeft = Directions.LEFT
                 # We know the direction of the danger we just need to see where that is
                 # Relative to pacman
                 if(dangerDirection == Directions.NORTH):
                     # Return south
                     desiredDirection = Directions.SOUTH
+                    # Left of south is east
                     desiredLeft = Directions.EAST
                 # If our danger is south
                 elif(dangerDirection == Directions.SOUTH):
                     desiredDirection = Directions.NORTH
+                    # Left of north is west
                     desiredLeft = Directions.WEST
                 # If our danger Direction is East
                 elif(dangerDirection == Directions.EAST):
@@ -114,9 +111,6 @@ class TimidAgent(Agent):
                 elif(dangerDirection == Directions.WEST):
                     desiredDirection = Directions.EAST
                     desiredLeft = Directions.SOUTH
-
-                #TODO possible error could be that we return the direction of the ghost,
-                # not the direction of the ghost relative to pacman ->
 
                 # We can say we are in danger and need to navagate for being in danger ->
                 '''
@@ -147,22 +141,11 @@ class TimidAgent(Agent):
                     return heading
 
         '''
-         3. -> IF IN DANGER -> (if pacman is (inDanger) we use that bool to indicate we need to flee)
-            We check for lega directions in the following order:
-            1.reversing the current direction,
-            2. turning to the left
-            3. then turning to the right
-            else:  none of these are legal, we continue in the direction of the danger, or
-            stop if no move is legal (only possible in contrived boards).
-        '''
-
-        '''
         4. -> If not in danger ->
             We act like left turn agent (We can just copy that code)
         '''
-        #TODO we still need the switch statement to see where the danger
-        # is relative to us
 
+        #Normal Left turn Behavior ->
         # List of directions the agent can choose from
         legal = state.getLegalPacmanActions()
 
@@ -188,7 +171,5 @@ class TimidAgent(Agent):
                 action = Directions.REVERSE[heading]  # Turn around
             else:
                 action = Directions.STOP  # Can't move!
-
+        # Returning our end action
         return action
-
-        # Checking for github
